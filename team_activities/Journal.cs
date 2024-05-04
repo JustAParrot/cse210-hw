@@ -1,14 +1,27 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+
 public class Journal
 {
-    public List<Entry> _entries;
-    public void AddEntry(Entry newEntry)
-    {
+    private List<Entry> _entries;
 
+    public Journal()
+    {
+        _entries = new List<Entry>();
     }
 
-    public void DisplayAll() 
+    public void AddEntry(Entry newEntry)
     {
-        //STILL MAKING SOME CHANGES
+        _entries.Add(newEntry);
+    }
+
+    public void DisplayAll()
+    {
+        foreach (var entry in _entries)
+        {
+            entry.Display();
+        }
     }
 
     public void SaveToFile(string file)
@@ -17,25 +30,25 @@ public class Journal
         {
             foreach (var entry in _entries)
             {
-                writer.WriteLine($"{entry.Date},{entry.Prompt},{entry.EntryText}");
+                writer.WriteLine($"{entry.Date}|{entry.PromptText}|{entry.EntryText}");
             }
         }
-        Console.WriteLine("Journal saved to file successfully.");
     }
 
     public void LoadFromFile(string file)
     {
+        _entries.Clear();
+        string line;
         using (StreamReader reader = new StreamReader(file))
         {
-            string line;
             while ((line = reader.ReadLine()) != null)
             {
-                string[] parts = line.Split(',');
-                _entries.Add(new Entry(parts[0], parts[1], parts[2]));
+                string[] parts = line.Split('|');
+                string date = parts[0];
+                string prompt = parts[1];
+                string entryText = parts[2];
+                _entries.Add(new Entry(date, prompt, entryText));
             }
         }
-        Console.WriteLine("Journal loaded from file successfully.");
     }
-    
-
 }

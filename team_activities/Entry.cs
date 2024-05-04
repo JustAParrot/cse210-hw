@@ -1,21 +1,25 @@
+using System;
 public class Entry
 {
-    public string _date { get; }
-    public string _promptText { get; }
-    public string _entryText { get; }
+    private string _date;
+    private string _promptText;
+    private string _entryText;
 
-    public Entry(string date, string prompt, string entryText)
+    public string Date { get { return _date; } }
+    public string PromptText { get { return _promptText; } }
+    public string EntryText { get { return _entryText; } }
+
+    public Entry(string date, string promptText, string entryText)
     {
         _date = date;
-        _promptText = prompt;
+        _promptText = promptText;
         _entryText = entryText;
     }
 
     public void Display()
     {
-        Console.WriteLine($"Date: {Date}");
-        Console.WriteLine($"Prompt: {Prompt}");
-        Console.WriteLine($"Entry: {EntryText}\n");
+        Console.WriteLine($"Date: {_date}");
+        Console.WriteLine($"Prompt: {_promptText}");
+        Console.WriteLine($"Response: {_entryText}\n");
     }
 }
-//STILL MAKING SOME CHANGES
