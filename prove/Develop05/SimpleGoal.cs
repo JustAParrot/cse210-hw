@@ -1,15 +1,12 @@
-public class SimpleGoal : Goal
-{
-    public SimpleGoal(string name, int points) : base(name, points) { }
+public class SimpleGoal : Goal {
+    public SimpleGoal(string name, string description, int points) : base(name, description, points) {}
 
-    public override void RecordEvent()
-    {
-        // Implementation to mark the goal as completed
-        MarkComplete();
+    public override void RecordEvent() {
+        // Record the event for a simple goal
     }
 
-    public override string GetProgress()
-    {
-        return IsCompleted ? "[X] " + Name : "[ ] " + Name;
+    public override bool IsComplete() {
+        // Implement logic to check if simple goal is complete
+        return false;
     }
 }

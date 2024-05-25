@@ -1,47 +1,23 @@
-using System;
+public class ChecklistGoal : Goal {
+    private int target;
+    private int bonus;
+    private int amountCompleted;
 
-public class ChecklistGoal : Goal
-{
-    public int TargetCount { get; set; }
-    public int CurrentCount { get; private set; }
-    public int BonusPoints { get; set; }
-
-    public ChecklistGoal(string name, int points, int targetCount, int bonusPoints)
-        : base(name, points)
-    {
-        TargetCount = targetCount;
-        BonusPoints = bonusPoints;
-        CurrentCount = 0;
+    public ChecklistGoal(string name, string description, int points, int target, int bonus) : base(name, description, points) {
+        this.target = target;
+        this.bonus = bonus;
+        amountCompleted = 0;
     }
 
-    public override int RecordEvent()
-    {
-        if (CurrentCount < TargetCount)
-        {
-            CurrentCount++;
-            if (CurrentCount == TargetCount)
-            {
-                IsCompleted = true;
-                return Points + BonusPoints;
-            }
-            return Points;
-        }
-        return 0;
+    public override void RecordEvent() {
+        amountCompleted++;
     }
 
-    public override void DisplayGoal()
-    {
-        Console.WriteLine($"[ {(IsCompleted ? "X" : " ")} ] {Name} (Completed {CurrentCount}/{TargetCount} times)");
+    public override bool IsComplete() {
+        return amountCompleted >= target;
     }
 
-    // Method to set CurrentCount during deserialization
-    public void SetCurrentCount(int count)
-    {
-        CurrentCount = count;
-    }
-
-    internal void SetCompleted(bool v)
-    {
-        throw new NotImplementedException();
+    public override string GetDetailsString() {
+        return $"{base.GetDetailsString()}, Completed: {amountCompleted}/{target}";
     }
 }

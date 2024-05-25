@@ -1,132 +1,96 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text.Json;
 
-class Program
-{
-    static List<Goal> goals = new List<Goal>();
-    static int score = 0;
-    static readonly string filePath = "goals.json";
+class Program {
+    static void Main(string[] args) {
+        GoalManager manager = new GoalManager();
+        manager.Start();
 
-    static void Main(string[] args)
-    {
-        // Example usage
-        // Add some sample goals
-        AddSampleGoals();
+        DisplayMainMenu(manager);
+    }
 
-        // Main loop
-        while (true)
-        {
-            Console.Clear();
-            DisplayGoals();
-            Console.WriteLine($"\nCurrent Score: {score}");
-            Console.WriteLine("\n1. Record Event");
-            Console.WriteLine("2. Add New Goal");
-            Console.WriteLine("3. Save Goals");
-            Console.WriteLine("4. Load Goals");
-            Console.WriteLine("5. Exit");
-            Console.Write("Choose an option: ");
-            var choice = Console.ReadLine();
+    // Added a user friendly game-like menu and the delete option for exceeding requirements
 
-            switch (choice)
-            {
+    static void DisplayMainMenu(GoalManager manager) {
+        while (true) {
+            Console.WriteLine("=== Goal Management Menu ===");
+            Console.WriteLine("1. List Goals");
+            Console.WriteLine("2. Create New Goal");
+            Console.WriteLine("3. Record Event");
+            Console.WriteLine("4. Display Player Info");
+            Console.WriteLine("5. View Completed Goals");
+            Console.WriteLine("6. Delete Goal");
+            Console.WriteLine("7. Quit");
+
+            Console.Write("Enter your choice: ");
+            string choice = Console.ReadLine();
+
+            switch (choice) {
                 case "1":
-                    RecordEvent();
+                    manager.ListGoalDetails();
                     break;
                 case "2":
-                    AddNewGoal();
+                    CreateNewGoal(manager);
                     break;
                 case "3":
-                    SaveGoals();
+                    RecordEvent(manager);
                     break;
                 case "4":
-                    LoadGoals();
+                    manager.DisplayPlayerInfo();
                     break;
                 case "5":
+                    manager.ListCompletedGoals();
+                    break;
+                case "6":
+                    DeleteGoal(manager);
+                    break;
+                case "7":
+                    Console.WriteLine("Thank you for using the Goal Management System. Goodbye!");
                     return;
                 default:
-                    Console.WriteLine("Invalid choice. Try again.");
+                    Console.WriteLine("Invalid choice. Please try again.");
                     break;
             }
         }
     }
 
-    static void DisplayGoals()
-    {
-        Console.WriteLine("Goals:");
-        foreach (var goal in goals)
-        {
-            goal.DisplayGoal();
-        }
-    }
+    static void CreateNewGoal(GoalManager manager) {
+        Console.WriteLine("Enter goal type (simple, eternal, checklist): ");
+        string goalType = Console.ReadLine();
 
-    static void AddSampleGoals()
-    {
-        goals.Add(new SimpleGoal("Run a marathon", 1000));
-        goals.Add(new EternalGoal("Read scriptures", 100));
-        goals.Add(new ChecklistGoal("Attend the temple", 50, 10, 500));
-    }
+        Console.WriteLine("Enter goal name: ");
+        string name = Console.ReadLine();
 
-    static void RecordEvent()
-    {
-        Console.Write("Enter the goal number to record an event: ");
-        if (int.TryParse(Console.ReadLine(), out int goalIndex) && goalIndex >= 0 && goalIndex < goals.Count)
-        {
-            score += goals[goalIndex].RecordEvent();
-        }
-        else
-        {
-            Console.WriteLine("Invalid goal number.");
-        }
-    }
+        Console.WriteLine("Enter goal description: ");
+        string description = Console.ReadLine();
 
-    static void AddNewGoal()
-    {
-        Console.WriteLine("Choose goal type: 1. Simple 2. Eternal 3. Checklist");
-        var goalType = Console.ReadLine();
-        Console.Write("Enter goal name: ");
-        var name = Console.ReadLine();
-        Console.Write("Enter points: ");
-        var points = int.Parse(Console.ReadLine());
+        Console.WriteLine("Enter points for completing the goal: ");
+        int points = int.Parse(Console.ReadLine());
 
-        switch (goalType)
-        {
-            case "1":
-                goals.Add(new SimpleGoal(name, points));
-                break;
-            case "2":
-                goals.Add(new EternalGoal(name, points));
-                break;
-            case "3":
-                Console.Write("Enter target count: ");
-                var targetCount = int.Parse(Console.ReadLine());
-                Console.Write("Enter bonus points: ");
-                var bonusPoints = int.Parse(Console.ReadLine());
-                goals.Add(new ChecklistGoal(name, points, targetCount, bonusPoints));
+        switch (goalType.ToLower()) {
+            case "checklist":
+                Console.WriteLine("Enter target for the checklist goal: ");
+                int target = int.Parse(Console.ReadLine());
+                
+                Console.WriteLine("Enter bonus points for completing the checklist goal: ");
+                int bonus = int.Parse(Console.ReadLine());
+
+                manager.CreateGoal(goalType, name, description, points, target, bonus);
                 break;
             default:
-                Console.WriteLine("Invalid goal type.");
+                manager.CreateGoal(goalType, name, description, points);
                 break;
         }
     }
 
-    static void SaveGoals()
-    {
-        var options = new JsonSerializerOptions { WriteIndented = true, Converters = { new GoalConverter() } };
-        var json = JsonSerializer.Serialize(goals, options);
-        File.WriteAllText(filePath, json);
-        File.WriteAllText("score.json", score.ToString());
+    static void RecordEvent(GoalManager manager) {
+        Console.WriteLine("Enter the name of the goal for which you want to record an event: ");
+        string goalName = Console.ReadLine();
+        manager.RecordEvent(goalName);
     }
 
-    static void LoadGoals()
-    {
-        if (File.Exists(filePath))
-        {
-            var options = new JsonSerializerOptions { Converters = { new GoalConverter() } };
-            var json = File.ReadAllText(filePath);
-            goals = JsonSerializer.Deserialize<List<Goal>>(json, options);
-            score = int.Parse(File.ReadAllText("score.json"));
-        }
+    static void DeleteGoal(GoalManager manager) {
+        Console.WriteLine("Enter the name of the goal you want to delete: ");
+        string goalName = Console.ReadLine();
+        manager.DeleteGoal(goalName);
     }
 }

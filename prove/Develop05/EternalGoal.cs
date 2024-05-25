@@ -1,16 +1,12 @@
-using System;
+public class EternalGoal : Goal {
+    public EternalGoal(string name, string description, int points) : base(name, description, points) {}
 
-public class EternalGoal : Goal
-{
-    public EternalGoal(string name, int points) : base(name, points) { }
-
-    public override int RecordEvent()
-    {
-        return Points;
+    public override void RecordEvent() {
+        // Record the event for an eternal goal
     }
 
-    public override void DisplayGoal()
-    {
-        Console.WriteLine($"[ ] {Name} (Eternal)");
+    public override bool IsComplete() {
+        // Eternal goal is never complete...i guess
+        return false;
     }
 }
